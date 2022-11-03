@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::group(['namespace' => 'App\Http\Controllers'],function () {
+
+    Route::get('/', 'SearchController@index')->name('search-page');
+
+    // Route::resource('searchs', SearchController::class)->except([
+    //     'create', 'store', 'edit', 'update', 'destroy'
+    // ]);
 });
