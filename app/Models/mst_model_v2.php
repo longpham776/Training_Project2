@@ -18,6 +18,11 @@ class mst_model_v2 extends Model
         return $query->where($column, 1);
     }
 
+    public function scopeMaker($query, $maker)
+    {
+        return $query->where('model_maker_code', $maker);
+    }
+
     public function scopeDisplacement($query, $from, $to)
     {
         return $query->where('model_displacement', '>=', $from)
@@ -32,6 +37,17 @@ class mst_model_v2 extends Model
     public function scopeCountModelSumBike($query, $column_name)
     {
         return $query->selectRaw('COUNT(model_code) as total_model, SUM(model_count) as total_bike')
+            ->where($column_name, 1);
+    }
+
+    public function scopeCountModelSumBikeAll($query)
+    {
+        return $query->selectRaw('COUNT(model_code) as total_model, SUM(model_count) as total_bike');
+    }
+
+    public function scopeCountModelAllColumn($query, $column_name)
+    {
+        return $query->selectRaw('COUNT(model_code) as total_model')
             ->where($column_name, 1);
     }
 

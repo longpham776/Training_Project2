@@ -8,6 +8,7 @@ use App\Enum\MotoDisplacement;
 use App\Models\Mst_model_maker;
 use App\Models\mst_model_v2;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class SearchController extends Controller
 {
@@ -18,7 +19,17 @@ class SearchController extends Controller
      */
     public function index(Request $request)
     {
-        $models = mst_model_v2::get();
+        $makerName = Mst_model_maker::makerNameAll()->get();
+
+        $categoryEnum = '';
+
+        $totalModelBike = mst_model_v2::countModelSumBikeAll()->first();
+
+        $params = '';
+
+        $kana = 1;
+
+        $name = 2;
 
         $motoKana = array_slice(MotoChar::getAllKeysAndValues(), 0, 10);
 
@@ -28,13 +39,23 @@ class SearchController extends Controller
 
         $motorBikes = mst_model_v2::hasBikes();
 
-        $makerName = '';
+        $motoCategory = array_slice(MotoCategory::getAllKeysAndValues(), 0, 28);
 
-        $categoryEnum = '';
+        $motoCategory = collect($motoCategory)->map(function ($category, $key) {
 
-        $totalModelBike = 0;
+            $countModelCategory = mst_model_v2::countModelAllColumn($category->colmn)->first();
 
-        $params = '';
+            if (!$countModelCategory->total_model) {
+
+                $category->enabled = false;
+
+                return $category;
+            }
+
+            $category->enabled = true;
+
+            return $category;
+        })->toArray();
 
         if ($request->no && $request->type) {
 
@@ -44,7 +65,7 @@ class SearchController extends Controller
 
             $motorBikes->kanaNamePrefix($categoryEnum['colmn']);
 
-            $makerName = Mst_model_maker::makerName($categoryEnum['colmn'])->get();
+            $makerName = Mst_model_maker::makerName($categoryEnum['colmn'], $request->no, $request->type)->get();
         }
 
         if ($request->key) {
@@ -54,6 +75,11 @@ class SearchController extends Controller
             $totalModelBike = mst_model_v2::countModelSumBikeByKey($categoryEnum['from'], $categoryEnum['to'])->first();
 
             $motorBikes->displacement($categoryEnum['from'], $categoryEnum['to']);
+        }
+
+        if ($request->maker) {
+
+            $motorBikes->maker($request->maker);
         }
 
         if ($request->ajax()) {
@@ -78,6 +104,7 @@ class SearchController extends Controller
             'categoryEnum',
             'totalModelBike',
             'motorBikes',
+            'motoCategory'
         ));
     }
 

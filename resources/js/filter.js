@@ -49,16 +49,32 @@ $(document).ready(function () {
     let requestParams = $('#requestParams').data('init');
 
     if (requestParams) {
+
+        console.log(requestParams);
+
         if (requestParams.type == 1) {
+
+            $(`#mt_kana_${requestParams.no}_${requestParams.type} a`).attr('href', 'Javascript:void(0)');
+
             $(`#mt_kana_${requestParams.no}_${requestParams.type}`).addClass('active');
         }
 
         if (requestParams.type == 2) {
+
+            $(`#mt_name_${requestParams.no}_${requestParams.type} a`).attr('href', 'Javascript:void(0)');
+
             $(`#mt_name_${requestParams.no}_${requestParams.type}`).addClass('active');
         }
 
         if (requestParams.key) {
+
+            $(`#mt_display_${requestParams.key} a`).attr('href', 'Javascript:void(0)');
+
             $(`#mt_display_${requestParams.key}`).addClass('active');
+        }
+
+        if (requestParams.maker) {
+            $(`#mt_maker_${requestParams.maker}`).addClass('active');
         }
 
     }
@@ -74,6 +90,44 @@ $(document).ready(function () {
             $(item).addClass('disabled');
         }
     });
+
+    let motoCategory = $('#motoCategory').data('init');
+
+    $.each(motoCategory, function (key, category) {
+
+        if (!category.enabled) {
+
+            if (category.type == 1) {
+                $(`#mt_kana_${category.code}_${category.type}`).removeClass('enabled');
+                $(`#mt_kana_${category.code}_${category.type}`).addClass('disabled');
+            }
+
+            if (category.type == 2) {
+                $(`#mt_name_${category.code}_${category.type}`).removeClass('enabled');
+                $(`#mt_name_${category.code}_${category.type}`).addClass('disabled');
+            }
+        }
+    });
+
+    $('.makerSearch').on('mouseover', function () {
+
+        let url;
+
+        if (requestParams.length != 0) {
+
+            if ($.inArray('maker', requestParams)) {
+                
+                url = `&maker=${requestParams.maker}`;
+            }
+
+            url = location.href + '&' + ($(this).children('a').attr('href')).replace(location.origin + '?', '');
+        }
+
+        $(this).children('a').attr('href', url);
+
+        $(this).off('mouseover');
+    });
+
 });
 
 function getData(page) {

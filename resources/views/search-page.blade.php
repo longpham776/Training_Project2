@@ -25,7 +25,11 @@
 
                             {{$categoryEnum['name']}} {{$totalModelBike['total_model']}}車種({{$totalModelBike['total_bike']}}台)
 
-                            @else {{$categoryEnum['title']}} {{$totalModelBike['total_model']}}車種({{$totalModelBike['total_bike']}}台) @endif
+                            @else   {{$categoryEnum['title']}} {{$totalModelBike['total_model']}}車種({{$totalModelBike['total_bike']}}台) @endif
+                            
+                            @elseif($totalModelBike)
+
+                            {{$totalModelBike->total_model.'車種('.$totalModelBike->total_bike.'台)'}}
 
                             @else 0車種(0台) @endif
                         </h4>
@@ -39,6 +43,7 @@
 <div class="container table table-bordered shadow-sm rounded">
     検索したい車種の頭文字、排気量、メーカーより車種を絞り込めます。
     <input type="hidden" id="requestParams" data-init="{{$params}}">
+    <input type="hidden" id="motoCategory" data-init="{{ json_encode($motoCategory) }}">
     <div class="row">
         <div class="col-1 bg-light">
             <strong>頭文字:</strong>
