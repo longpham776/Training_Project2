@@ -31,18 +31,20 @@ $(document).ready(function () {
       $('#errorModalCenter strong').text('一度に10車種まで選択できます。');
       $('#errorModalCenter').modal('show');
     }
-    var url = {
-      'mmc': '',
-      'moc': ''
-    };
-    $.each($('input:checkbox:checked'), function (index, item) {
-      var maker_model = $(item).data('init');
-      url.mmc = url.mmc + maker_model.maker + '_';
-      url.moc = url.moc + maker_model.model + '_';
-    });
-    url.mmc = url.mmc.replace(/^_+|_+$/g, '');
-    url.moc = url.moc.replace(/^_+|_+$/g, '');
-    $(this).parents('a').attr('href', 'area.html/?' + $.param(url));
+    if ($('input:checkbox:checked').length > 0 && $('input:checkbox:checked').length < 10) {
+      var url = {
+        'mmc': '',
+        'moc': ''
+      };
+      $.each($('input:checkbox:checked'), function (index, item) {
+        var maker_model = $(item).data('init');
+        url.mmc = url.mmc + maker_model.maker + '_';
+        url.moc = url.moc + maker_model.model + '_';
+      });
+      url.mmc = url.mmc.replace(/^_+|_+$/g, '');
+      url.moc = url.moc.replace(/^_+|_+$/g, '');
+      $(this).parents('a').attr('href', 'area.html/?' + $.param(url));
+    }
   });
 });
 function getData(page) {

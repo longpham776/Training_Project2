@@ -138,7 +138,7 @@ class SearchController extends Controller
                 $kana->enable = "enabled";
             }
 
-            if (request("kana") && $params["kana"] == $kana->key) {
+            if (isset($params['kana']) && $params["kana"] == $kana->key) {
 
                 $kana->select = "active";
             }
@@ -150,6 +150,20 @@ class SearchController extends Controller
 
         $motoName = collect($motoName)->map(function ($name, $key) use ($params, $nameHasBikes) {
 
+            $name->enable = "disabled";
+
+            $name->select = "";
+
+            if (in_array($name->code, $nameHasBikes)) {
+
+                $name->enable = "enabled";
+            }
+
+            if (!isset($params["kana"]) && isset($params["name"]) && $params["name"] == $name->key) {
+
+                $name->select = "active";
+            }
+            
             unset($params["kana"]);
 
             $arrUrl = array(
@@ -160,20 +174,6 @@ class SearchController extends Controller
             $pathName = http_build_query(array_merge($params, $arrUrl));
 
             $name->url = url()->current() . '/?' . $pathName;
-
-            $name->enable = "disabled";
-
-            $name->select = "";
-
-            if (in_array($name->code, $nameHasBikes)) {
-
-                $name->enable = "enabled";
-            }
-
-            if (!isset($params["name"]) && isset($params['kana']) && $params["name"] == $name->key) {
-
-                $name->select = "active";
-            }
 
             return $name;
         })->toArray();
