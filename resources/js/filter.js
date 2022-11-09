@@ -2,6 +2,10 @@ let flag = 0;
 
 let page = 2;
 
+let requestParams = $('#requestParams').data('init');
+
+let motoCategory = $('#motoCategory').data('init');
+
 $(document).ready(function () {
     $(document).on('scroll', function () {
 
@@ -29,7 +33,6 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.btnFindByModel', function () {
-        console.log($('input:checkbox:checked').length);
 
         if (!$('input:checkbox:checked').length) {
 
@@ -44,88 +47,26 @@ $(document).ready(function () {
 
             $('#errorModalCenter').modal('show');
         }
-    });
 
-    let requestParams = $('#requestParams').data('init');
+        let url = {
+            'mmc' : '',
+            'moc' : ''
+        };
 
-    if (requestParams) {
+        $.each($('input:checkbox:checked'), function (index, item) {
 
-        console.log(requestParams);
+            let maker_model = $(item).data('init');
 
-        if (requestParams.type == 1) {
+            url.mmc = url.mmc + maker_model.maker + '_';
 
-            $(`#mt_kana_${requestParams.no}_${requestParams.type} a`).attr('href', 'Javascript:void(0)');
+            url.moc = url.moc + maker_model.model + '_';
+        })
 
-            $(`#mt_kana_${requestParams.no}_${requestParams.type}`).addClass('active');
-        }
+        url.mmc = (url.mmc).replace(/^_+|_+$/g, '');
 
-        if (requestParams.type == 2) {
+        url.moc = (url.moc).replace(/^_+|_+$/g, '');
 
-            $(`#mt_name_${requestParams.no}_${requestParams.type} a`).attr('href', 'Javascript:void(0)');
-
-            $(`#mt_name_${requestParams.no}_${requestParams.type}`).addClass('active');
-        }
-
-        if (requestParams.key) {
-
-            $(`#mt_display_${requestParams.key} a`).attr('href', 'Javascript:void(0)');
-
-            $(`#mt_display_${requestParams.key}`).addClass('active');
-        }
-
-        if (requestParams.maker) {
-            $(`#mt_maker_${requestParams.maker}`).addClass('active');
-        }
-
-    }
-
-    $.each($('.makerSearch'), function (index, item) {
-
-        let maker = $(item).data('init');
-
-        if (maker.model_count == 0) {
-
-            $(item).removeClass('enabled');
-
-            $(item).addClass('disabled');
-        }
-    });
-
-    let motoCategory = $('#motoCategory').data('init');
-
-    $.each(motoCategory, function (key, category) {
-
-        if (!category.enabled) {
-
-            if (category.type == 1) {
-                $(`#mt_kana_${category.code}_${category.type}`).removeClass('enabled');
-                $(`#mt_kana_${category.code}_${category.type}`).addClass('disabled');
-            }
-
-            if (category.type == 2) {
-                $(`#mt_name_${category.code}_${category.type}`).removeClass('enabled');
-                $(`#mt_name_${category.code}_${category.type}`).addClass('disabled');
-            }
-        }
-    });
-
-    $('.makerSearch').on('mouseover', function () {
-
-        let url;
-
-        if (requestParams.length != 0) {
-
-            if ($.inArray('maker', requestParams)) {
-                
-                url = `&maker=${requestParams.maker}`;
-            }
-
-            url = location.href + '&' + ($(this).children('a').attr('href')).replace(location.origin + '?', '');
-        }
-
-        $(this).children('a').attr('href', url);
-
-        $(this).off('mouseover');
+        $(this).parents('a').attr('href', 'area.html/?' + $.param(url));
     });
 
 });

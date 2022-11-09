@@ -8,7 +8,7 @@
             </div>
             <div class="col-8">
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" name="name" id="name">
+                    <input type="checkbox" class="form-check-input" data-init="{{json_encode(array('maker' => $bike->model_maker_code, 'model' => $bike->model_code))}}" name="name" id="name">
                     <a class="text-decoration-none text-wrap text-break" href="Javascript:void(0)">
                         <h6>&ensp;{{$bike->model_name." (".$bike->model_count.")"}}</h6>
                     </a>
@@ -26,6 +26,8 @@
     @endforelse
 </div><br>
 <div class="d-flex justify-content-center">
-    <button type="button" class="btnFindByModel btn btn-info"><i class="fa fa-search"></i>チェックした車両で検索 (最大10台)</button>
+    <a href="Javascript:void(0)">
+        <button type="button" class="btnFindByModel btn btn-info"><i class="fa fa-search"></i>チェックした車両で検索 (最大10台)</button>
+    </a>
 </div>
 <br>

@@ -10,7 +10,7 @@ use App\Enum\EnumBase;
  * Time: 9:44 AM
  */
 
-class MotoCategory extends EnumBase{
+class MotoCategory extends EnumBase{ 
 
 	const
 		GENCHARI = "{\"code\": \"1\", \"name\": \"原付スクーター(〜50cc)\", \"colmn\": \"model_genchari\", \"type\": \"1\", \"category_model_flag\": \"1\", \"char_code\": \"gentsuki\", \"priority\": \"0\"}"

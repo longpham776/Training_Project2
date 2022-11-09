@@ -13,9 +13,19 @@ class mst_model_v2 extends Model
 
     protected $primaryKey = 'model_code';
 
-    public function scopeKanaNamePrefix($query, $column)
+    public function scopeColumn($query, $column_name)
     {
-        return $query->where($column, 1);
+        return $query->where($column_name, 1);
+    }
+
+    public function scopeKanaPrefix($query, $kana)
+    {
+        return $query->where('model_kana_prefix', $kana);
+    }
+
+    public function scopeNamePrefix($query, $name)
+    {
+        return $query->where('model_name_prefix', $name);
     }
 
     public function scopeMaker($query, $maker)
@@ -38,11 +48,6 @@ class mst_model_v2 extends Model
     {
         return $query->selectRaw('COUNT(model_code) as total_model, SUM(model_count) as total_bike')
             ->where($column_name, 1);
-    }
-
-    public function scopeCountModelSumBikeAll($query)
-    {
-        return $query->selectRaw('COUNT(model_code) as total_model, SUM(model_count) as total_bike');
     }
 
     public function scopeCountModelAllColumn($query, $column_name)

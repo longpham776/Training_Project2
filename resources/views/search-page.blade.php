@@ -50,8 +50,8 @@
         </div>
         <div class="col pagination flex-wrap">
             @foreach($motoKana as $mt_kana)
-            <div class="page-item enabled" id="mt_kana_{{$mt_kana->no.'_'.$mt_kana->type}}">
-                <a class="text-decoration-none page-link" href="{{route('search-page',['no' => $mt_kana->no, 'type' => $mt_kana->type])}}">{{$mt_kana->name}}</a>&ensp;
+            <div class="page-item {{$mt_kana->enable}} {{$mt_kana->select}}" id="mt_kana_{{$mt_kana->no.'_'.$mt_kana->type}}">
+                <a class="text-decoration-none page-link" href="{{$mt_kana->url}}">{{$mt_kana->name}}</a>&ensp;
             </div>
             @endforeach
         </div>
@@ -63,8 +63,8 @@
         </div>
         <div class="col pagination flex-wrap">
             @foreach($motoName as $mt_name)
-            <div class="page-item enabled" id="mt_name_{{$mt_name->no.'_'.$mt_name->type}}">
-                <a class="text-decoration-none page-link" href="{{route('search-page',['no' => $mt_name->no, 'type' => $mt_name->type])}}">{{$mt_name->name}}</a>&ensp;
+            <div class="page-item {{$mt_name->enable}} {{$mt_name->select}}" id="mt_name_{{$mt_name->no.'_'.$mt_name->type}}">
+                <a class="text-decoration-none page-link" href="{{$mt_name->url}}">{{$mt_name->name}}</a>&ensp;
             </div>
             @endforeach
         </div>
@@ -76,8 +76,8 @@
         </div>
         <div class="col pagination flex-wrap">
             @foreach($motoDisplacement as $mt_display)
-            <div class=" page-item enabled" id="mt_display_{{$mt_display->key}}">
-                <a class="text-decoration-none page-link" href="{{route('search-page',['key' => $mt_display->key])}}">{{$mt_display->name}}</a>&ensp;
+            <div class="displacement page-item {{$mt_display->enable}} {{$mt_display->select}}" id="mt_display_{{$mt_display->key}}">
+                <a class="text-decoration-none page-link" href="{{$mt_display->url}}">{{$mt_display->name}}</a>&ensp;
             </div>
             @endforeach
         </div>
@@ -91,8 +91,8 @@
         @if($makerName)
         <div class="col pagination flex-wrap">
             @foreach($makerName as $mt_maker)
-            <div class="makerSearch page-item enabled" id="mt_maker_{{$mt_maker->model_maker_code}}" data-init="{{$mt_maker}}">
-                <a class="text-decoration-none page-link" href="{{route('search-page',['maker' => $mt_maker->model_maker_code])}}">{{$mt_maker->model_maker_hyouji}}</a>&ensp;
+            <div class="makerSearch page-item {{$mt_maker->enable}} {{$mt_maker->select}}" id="mt_maker_{{$mt_maker->model_maker_code}}" data-init="{{$mt_maker}}">
+                <a class="text-decoration-none page-link" href="{{$mt_maker->url}}">{{$mt_maker->model_maker_hyouji}}</a>&ensp;
             </div>
             @endforeach
         </div>
@@ -102,7 +102,7 @@
     </div>
     
     <div class="d-flex justify-content-center">
-        <a href="{{route('search-page')}}"><button type="button" class="btn btn-secondary">選択を解除する</button></a>
+        <a href="{{$urlResetPage}}"><button type="button" class="btn btn-secondary">選択を解除する</button></a>
     </div>
     <br>
 </div>
