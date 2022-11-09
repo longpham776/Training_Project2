@@ -82,38 +82,36 @@ class SearchController extends Controller
 
         $makerHasBikes = $makerHasBikes->select("model_maker_code")->groupBy("model_maker_code")->pluck("model_maker_code")->toArray();
 
-        if ($request->kana) {
+        if (isset($params['kana'])) {
 
-            $kanaChar = MotoChar::getCodeByKey($request->kana);
+            $kanaChar = MotoChar::getCodeByKey($params["kana"]);
 
             $motorBikes->kanaPrefix($kanaChar);
 
             $totalModelBike->kanaPrefix($kanaChar);
-        }
+        }else if (isset($params['name'])) {
 
-        if ($request->name) {
-
-            $nameChar = MotoChar::getCodeByKey($request->name);
+            $nameChar = MotoChar::getCodeByKey($params["name"]);
 
             $motorBikes->namePrefix($nameChar);
 
             $totalModelBike->namePrefix($nameChar);
         }
 
-        if ($request->displace) {
+        if (isset($params["displace"])) {
 
-            $categoryEnum = MotoDisplacement::getMotoDisplacementByKey($request->displace);
+            $categoryEnum = MotoDisplacement::getMotoDisplacementByKey($params["displace"]);
 
             $totalModelBike->displacement($categoryEnum['from'], $categoryEnum['to']);
 
             $motorBikes->displacement($categoryEnum['from'], $categoryEnum['to']);
         }
 
-        if ($request->maker) {
+        if (isset($params["maker"])) {
 
-            $totalModelBike->maker($request->maker);
+            $totalModelBike->maker($params["maker"]);
 
-            $motorBikes->maker($request->maker);
+            $motorBikes->maker($params["maker"]);
         }
 
         $motoKana = array_slice(MotoChar::getAllKeysAndValues(), 0, 10);
@@ -172,7 +170,7 @@ class SearchController extends Controller
                 $name->enable = "enabled";
             }
 
-            if (request("name") && $params["name"] == $name->key) {
+            if (!isset($params["name"]) && isset($params['kana']) && $params["name"] == $name->key) {
 
                 $name->select = "active";
             }
