@@ -11,6 +11,8 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
+use Faker\Generator as Faker;
+
 class SearchController extends Controller
 {
     /**
@@ -20,13 +22,9 @@ class SearchController extends Controller
      */
     public function index(Request $request)
     {
-        if (!$request->btype && !$request->ctype) {
+        $params = $request->all();
 
-            return abort(404, "Page not found");
-        }
-
-        if ($request->btype && $request->ctype) {
-
+        if ((!isset($params['btype']) && !isset($params['ctype'])) || (isset($params['btype']) && isset($params['ctype']))) {
             return abort(404, "Page not found");
         }
 
@@ -34,112 +32,81 @@ class SearchController extends Controller
 
         $urlResetPage = '';
 
-        if ($request->btype) {
+        if (isset($params['btype'])) {
             try {
+                $urlResetPage = url()->current() . '/?btype=' . $params['btype'];
 
-                $urlResetPage = url()->current().'/?btype='.$request->btype;
-
-                $motoCategory = MotoCategory::getMotoCategory($request->btype, 1);
-            } catch (Exception) {
-
+                $motoCategory = MotoCategory::getMotoCategory($params['btype'], 1);
+            } catch (Exception $e) {
                 return abort(404, "Page not found");
             }
         }
 
-        if ($request->ctype) {
+        if (isset($params['ctype'])) {
             try {
+                $urlResetPage = url()->current() . '/?ctype=' . $params['ctype'];
 
-                $urlResetPage = url()->current().'/?ctype='.$request->ctype;
-
-                $motoCategory = MotoCategory::getMotoCategory($request->ctype, 2);
+                $motoCategory = MotoCategory::getMotoCategory($params['ctype'], 2);
             } catch (Exception) {
-
                 return abort(404, "Page not found");
             }
         }
 
         $categoryEnum = $motoCategory;
 
-        $totalModelBike = mst_model_v2::countModelSumBike($motoCategory["colmn"])->hasBikes();
-
-        $params = $request->all();
-
         $motorBikes = mst_model_v2::column($motoCategory["colmn"])->hasBikes();
 
-        $kanaHasBikes = clone $motorBikes;
+        $totalModelBike = '';
 
+        $kanaHasBikes = clone $motorBikes;
         $kanaHasBikes = $kanaHasBikes->select("model_kana_prefix")->groupBy("model_kana_prefix")->pluck("model_kana_prefix")->toArray();
 
         $nameHasBikes = clone $motorBikes;
-
         $nameHasBikes = $nameHasBikes->select("model_name_prefix")->groupBy("model_name_prefix")->pluck("model_name_prefix")->toArray();
 
         $displaceHasBikes = clone $motorBikes;
-
         $displaceHasBikes = $displaceHasBikes->select("model_displacement")->groupBy("model_displacement")->pluck("model_displacement")->toArray();
 
         $makerHasBikes = clone $motorBikes;
-
         $makerHasBikes = $makerHasBikes->select("model_maker_code")->groupBy("model_maker_code")->pluck("model_maker_code")->toArray();
 
         if (isset($params['kana'])) {
-
             $kanaChar = MotoChar::getCodeByKey($params["kana"]);
-
             $motorBikes->kanaPrefix($kanaChar);
-
-            $totalModelBike->kanaPrefix($kanaChar);
-        }else if (isset($params['name'])) {
-
+        } else if (isset($params['name'])) {
             $nameChar = MotoChar::getCodeByKey($params["name"]);
-
             $motorBikes->namePrefix($nameChar);
-
-            $totalModelBike->namePrefix($nameChar);
         }
 
         if (isset($params["displace"])) {
-
             $categoryEnum = MotoDisplacement::getMotoDisplacementByKey($params["displace"]);
-
-            $totalModelBike->displacement($categoryEnum['from'], $categoryEnum['to']);
-
             $motorBikes->displacement($categoryEnum['from'], $categoryEnum['to']);
         }
 
         if (isset($params["maker"])) {
-
-            $totalModelBike->maker($params["maker"]);
-
             $motorBikes->maker($params["maker"]);
         }
 
         $motoKana = array_slice(MotoChar::getAllKeysAndValues(), 0, 10);
-
         $motoKana = collect($motoKana)->map(function ($kana, $key) use ($params, $kanaHasBikes) {
 
             unset($params["name"]);
 
             $arrUrl = array(
-
                 "kana" => $kana->key
             );
 
             $pathName = http_build_query(array_merge($params, $arrUrl));
 
-            $kana->url = url()->current() . '/?' . $pathName;
-
+            $kana->url    = url()->current() . '/?' . $pathName;
             $kana->enable = "disabled";
-
             $kana->select = "";
 
             if (in_array($kana->code, $kanaHasBikes)) {
-
                 $kana->enable = "enabled";
             }
 
             if (isset($params['kana']) && $params["kana"] == $kana->key) {
-
                 $kana->select = "active";
             }
 
@@ -147,27 +114,22 @@ class SearchController extends Controller
         })->toArray();
 
         $motoName = array_slice(MotoChar::getAllKeysAndValues(), 10);
-
         $motoName = collect($motoName)->map(function ($name, $key) use ($params, $nameHasBikes) {
 
             $name->enable = "disabled";
-
             $name->select = "";
 
             if (in_array($name->code, $nameHasBikes)) {
-
                 $name->enable = "enabled";
             }
 
             if (!isset($params["kana"]) && isset($params["name"]) && $params["name"] == $name->key) {
-
                 $name->select = "active";
             }
-            
+
             unset($params["kana"]);
 
             $arrUrl = array(
-
                 "name" => $name->key
             );
 
@@ -179,29 +141,24 @@ class SearchController extends Controller
         })->toArray();
 
         $motoDisplacement = MotoDisplacement::getAllKeysAndValues();
-
         $motoDisplacement = collect($motoDisplacement)->map(function ($displace, $key) use ($params, $displaceHasBikes) {
 
             $arrUrl = array(
-
                 "displace" => $displace->key
             );
 
             $pathName = http_build_query(array_merge($params, $arrUrl));
 
-            $displace->url = url()->current() . '/?' . $pathName;
-
-            $displace->enable = "disabled";
-
+            $displace->url    = url()->current() . '/?' . $pathName;
             $displace->select = "";
 
-            if (in_array($displace->to, $displaceHasBikes)) {
+            $displaceCheck = collect($displaceHasBikes)->search(function ($item, $key) use ($displace) {
+                return $item >= $displace->from && $item <= $displace->to;
+            });
 
-                $displace->enable = "enabled";
-            }
+            $displace->enable = $displaceCheck === false ? "disabled" : "enabled";
 
-            if (request("displace") && $params["displace"] == $displace->key) {
-
+            if (isset($params["displace"]) && $params["displace"] == $displace->key) {
                 $displace->select = "active";
             }
 
@@ -209,29 +166,23 @@ class SearchController extends Controller
         })->toArray();
 
         $makerName = Mst_model_maker::makerName($motoCategory)->get();
-
         $makerName = $makerName->map(function ($maker, $key) use ($params, $makerHasBikes) {
 
             $arrUrl = array(
-
                 "maker" => $maker->model_maker_code
             );
 
             $pathName = http_build_query(array_merge($params, $arrUrl));
 
-            $maker->url = url()->current() . '/?' . $pathName;
-
+            $maker->url    = url()->current() . '/?' . $pathName;
             $maker->enable = "disabled";
-
             $maker->select = "";
 
             if (in_array($maker->model_maker_code, $makerHasBikes)) {
-
                 $maker->enable = "enabled";
             }
 
-            if (request("maker") && $params["maker"] == $maker->model_maker_code) {
-
+            if (isset($params["maker"]) && $params["maker"] == $maker->model_maker_code) {
                 $maker->select = "active";
             }
 
@@ -239,17 +190,19 @@ class SearchController extends Controller
         });
 
         if ($request->ajax()) {
-
             $motorBikes = $motorBikes->paginate(40);
-
-            return view('ajaxListMotorBikes', compact('motorBikes'));
+            
+            return response()->json([
+                'html' => view('ajaxListMotorBikes', compact('motorBikes'))->render(),
+                'moto' => $motorBikes
+            ]);
         }
 
         $params = json_encode($params);
 
-        $motorBikes = $motorBikes->paginate(40);
+        $totalModelBike = (clone $motorBikes)->countModelSumBike()->first();
 
-        $totalModelBike = $totalModelBike->first();
+        $motorBikes = $motorBikes->paginate(40);
 
         return view('search-page', compact(
             'params',

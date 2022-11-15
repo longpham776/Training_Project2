@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SolrController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,6 +17,10 @@ use Illuminate\Support\Facades\Route;
 Route::group(['namespace' => 'App\Http\Controllers'],function () {
 
     Route::get('/', 'SearchController@index')->name('search-page');
+
+    Route::resource('solrs', SolrController::class)->except([
+        'create', 'edit'
+    ]);
 
     // Route::resource('searchs', SearchController::class)->except([
     //     'create', 'store', 'edit', 'update', 'destroy'

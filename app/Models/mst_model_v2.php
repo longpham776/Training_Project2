@@ -44,22 +44,8 @@ class mst_model_v2 extends Model
         return $query->where('model_count', '>', 0);
     }
 
-    public function scopeCountModelSumBike($query, $column_name)
+    public function scopeCountModelSumBike($query)
     {
-        return $query->selectRaw('COUNT(model_code) as total_model, SUM(model_count) as total_bike')
-            ->where($column_name, 1);
-    }
-
-    public function scopeCountModelAllColumn($query, $column_name)
-    {
-        return $query->selectRaw('COUNT(model_code) as total_model')
-            ->where($column_name, 1);
-    }
-
-    public function scopeCountModelSumBikeByKey($query, $from, $to)
-    {
-        return $query->selectRaw('COUNT(model_code) as total_model, SUM(model_count) as total_bike')
-            ->where('model_displacement', '>=', $from)
-            ->where('model_displacement', '<=', $to);
+        return $query->selectRaw('COUNT(model_code) as total_model, SUM(model_count) as total_bike');
     }
 }

@@ -8,7 +8,6 @@ let motoCategory = $('#motoCategory').data('init');
 
 $(document).ready(function () {
     $(document).on('scroll', function () {
-
         let maxHeightPage = $(document).height() - $(window).height();
 
         let scrollPage = $(document).scrollTop();
@@ -18,12 +17,10 @@ $(document).ready(function () {
         let totalCurrenPage = $('.currentPage').length;
 
         if (totalPage == totalCurrenPage) {
-
             $(document).off('scroll');
         }
 
         if ((scrollPage >= (maxHeightPage * 2 / 3) && !flag)) {
-
             flag = 1;
 
             getData(page);
@@ -35,30 +32,33 @@ $(document).ready(function () {
     $(document).on('click', '.btnFindByModel', function () {
 
         if (!$('input:checkbox:checked').length) {
-
             $('#errorModalCenter strong').text('検索対象の車種を選択してください。');
 
             $('#errorModalCenter').modal('show');
         }
 
         if ($('input:checkbox:checked').length > 10) {
-
             $('#errorModalCenter strong').text('一度に10車種まで選択できます。');
 
             $('#errorModalCenter').modal('show');
         }
 
-        if($('input:checkbox:checked').length > 0 && $('input:checkbox:checked').length < 10){
+        if($('input:checkbox:checked').length > 0 && $('input:checkbox:checked').length <= 10){
             let url = {
                 'mmc' : '',
                 'moc' : ''
             };
+
+            let arrCheck = [];
     
-            $.each($('input:checkbox:checked'), function (index, item) {
-    
+            $.each($('input:checkbox:checked'), function (index, item)  {
                 let maker_model = $(item).data('init');
-    
-                url.mmc = url.mmc + maker_model.maker + '_';
+
+                if(jQuery.inArray(maker_model.maker, arrCheck) == -1){
+                    arrCheck.push(maker_model.maker);
+
+                    url.mmc = url.mmc + maker_model.maker + '_';
+                }
     
                 url.moc = url.moc + maker_model.model + '_';
             })
@@ -87,9 +87,11 @@ function getData(page) {
         type: 'get',
         datatype: 'html',
 
-    }).done(function (data) {
+    }).done(function (response) {
 
-        $('.motorBikesList').append(data);
+        if((response.moto.data).length > 0){
+            $('.motorBikesList').append(response.html);
+        }
 
         flag = 0;
 
